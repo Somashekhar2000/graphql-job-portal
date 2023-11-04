@@ -21,24 +21,24 @@ func NewRepo(db *gorm.DB) (*Repo, error) {
 }
 
 type Users interface {
-	CreateUser(custommodel.User) (custommodel.User, error)
-	FetchUserByEmail(string) (*custommodel.User, error)
+	CreateUser(cu custommodel.User) (custommodel.User, error)
+	GetUserByEmail(s string) (*custommodel.User, error)
 }
 
-func (r *Repo) CreateUser(u custommodel.User) (custommodel.User, error) {
+func (r *Repo) CreateUser(cu custommodel.User) (custommodel.User, error) {
 
-	err := r.db.Create(&u).Error
+	err := r.db.Create(&cu).Error
 	if err != nil {
 		return custommodel.User{}, err
 	}
-	return u, nil
+	return cu, nil
 }
-func (r *Repo) FetchUserByEmail(s string) (*custommodel.User, error) {
-	var u custommodel.User
-	tx := r.db.Where("email=?", s).First(&u)
+func (r *Repo) GetUserByEmail(s string) (*custommodel.User, error) {
+	var cu custommodel.User
+	tx := r.db.Where("email=?", s).First(&cu)
 	if tx.Error != nil {
 		return nil, nil
 	}
-	return &u, nil
+	return &cu, nil
 
 }

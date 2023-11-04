@@ -21,35 +21,34 @@ func Open() (*gorm.DB, error) {
 }
 
 func Connection() (*gorm.DB, error) {
-	log.Info().Msg("main : Started : Initializing db support")
+	log.Info().Msg("main : Started : Initializing database support")
 	db, err := Open()
 	if err != nil {
-		return nil, fmt.Errorf("connecting to db %w", err)
+		return nil, fmt.Errorf("connecting to database %w", err)
 	}
-	pg, err := db.DB()
+	sdb, err := db.DB()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get database instance %w ", err)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	err = pg.PingContext(ctx)
+	err = sdb.PingContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("database is not connected: %w ", err)
 	}
-	//db.Migrator().DropTable(&custommodel.Job{})
 
 	err = db.Migrator().AutoMigrate(&custommodel.User{})
 	if err != nil {
-		return nil, fmt.Errorf("auto migration failed: %w ", err)
+		return nil, fmt.Errorf("auto migration failed for User: %w ", err)
 	}
 	err = db.Migrator().AutoMigrate(&custommodel.Company{})
 	if err != nil {
-		return nil, fmt.Errorf("auto migration failed: %w ", err)
+		return nil, fmt.Errorf("auto migration failed for Company: %w ", err)
 	}
 	err = db.Migrator().AutoMigrate(&custommodel.Job{})
 	if err != nil {
-		return nil, fmt.Errorf("auto migration failed: %w ", err)
+		return nil, fmt.Errorf("auto migration failed for Job: %w ", err)
 	}
 	return db, nil
 }
